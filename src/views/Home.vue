@@ -1,18 +1,23 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div id="custom-home">
+    <HomeContent />
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue';
+
+import HomeContent from '@/components/HomeContent.vue';
 
 export default {
   name: 'home',
   components: {
-    HelloWorld,
+    HomeContent,
+  },
+  beforeCreate: function () {
+    fetch(`${this.$store.state.apiUrl}/api/user`, {
+      method: 'GET',
+    })
+      .then(res => res.json());
   },
 };
 </script>

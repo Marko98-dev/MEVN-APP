@@ -1,0 +1,29 @@
+const mongoose = require('mongoose');
+const { StringUtil } = require('../utilities/string-util');
+const bcrypt = require('bcrypt-nodejs');
+
+const userSchema = new mongoose.Schema({
+  username: String,
+  first: String,
+  last: String,
+  password: String
+});
+userSchema.set('timestamps', true);
+userSchema.virtual('fullName').get(function () {
+  const first = StringUtil.capitalize(this.first.toLowerCase());
+  const last = StringUtil.capitalize(this.last.toLowerCase());
+  return `${first} ${last}`;
+});
+userSchema.statics.passwordMatches = function (password, hash) {
+  return bcrypt.compareSync(password, hash); // compering password that user types in field with hashed one password !  
+}
+userSchema.pre('save', function () {
+  this.username = this.username.toLowerCase();
+  this.first = this.first.toLowerCase();
+  this.last = this.last.toLowerCase();
+  const unsafePassword = this.password;
+  this.password = bcrypt.hashSync(unsafePassword);
+  next();
+});
+
+module.exports = mongoose.model('user', userSchema);

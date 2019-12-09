@@ -1,0 +1,48 @@
+const { StringUtil } = require('../../utilities/string-util');
+const User = require('../../model/user-model');
+
+const index = function (req, res) {
+  const validation = validateIndex(req.body);
+  if (!validation.isValid) {
+    return res.status(400).json({ message: validation.message });
+  } else {
+    const user = new User ({
+      username: req.body.username,
+      password: req.body.password,
+      first: req.body.first,
+      last: req.body.last
+    });
+    user.save(error => {
+      if (error) {
+        if(error.code === 11000) { // mongodb error.code 11 000 is for username already taken !
+          return res.status(403).json({ message: 'Username is already taken !' });
+        };
+        return res.status(500).json();
+      };
+      return res.status(201).json();
+    });
+  };
+};
+
+function validateIndex(body) {
+  let errors = '';
+  if (StringUtil.isEmpty(body.username)) {
+    errors += 'Username is required !';
+  };
+  if (StringUtil.isEmpty(body.password)) {
+    errors += 'Password is required !'
+  };
+  if (StringUtil.isEmpty(body.first)) {
+    errors += 'First name is required !'
+  };
+  if (StringUtil.isEmpty(body.last)) {
+    errors += 'Last name is required !'
+  };
+
+  return {
+    isValid: StringUtil.isEmpty(errors),
+    message: errors
+  };
+}
+
+exports.index = index;

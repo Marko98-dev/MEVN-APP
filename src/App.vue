@@ -1,12 +1,30 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+    <NavBar />
+    <div id="app-container">
+      <router-view />
     </div>
-    <router-view/>
+    <Footer />
   </div>
 </template>
+
+<script>
+
+import NavBar from '@/components/NavBar.vue';
+import Footer from '@/components/Footer.vue';
+
+export default {
+  name: 'app',
+  components: {
+    NavBar,
+    Footer,
+  },
+  beforeCreate: function () {
+    this.$store.dispatch('authenticate');
+  },
+};
+
+</script>
 
 <style lang="scss">
 #app {
